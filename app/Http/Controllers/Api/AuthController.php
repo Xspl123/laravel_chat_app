@@ -4,41 +4,42 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
+use \App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 class AuthController extends Controller
 {
-    public function index()
-    {
-        return view('index');
-    }
-    // public function register(Request $request){
-    //     $fields = $request->validate([
-    //         'name' =>'required|string',
-    //         'email'=>'required|string|email|unique:users,email',
-    //         'password' =>'required|confirmed'
-    //     ]);
-
-    //     $user = User::create([
-    //         'name'=>$fields['name'],
-    //         'email'=>$fields['email'],
-    //         'password'=>Hash::make($fields['password']),
-    //     ]);
-
-    //     //create token
-    //     $token = $user->createToken('myapptoken')->plainTextToken;
-
-    //     $response = [
-    //         'status'=>true,
-    //         'message'=>'registered successfully!',
-    //         'data' =>[
-    //             'user'=>$user,
-    //             'token'=>$token
-    //         ]
-    //     ];
-    //     return response($response,201);
+    // public function index()
+    // {
+    //     return view('index');
     // }
+    public function register(Request $request){
+        $fields = $request->validate([
+            'name' =>'required|string',
+            'email'=>'required|string|email|unique:users,email',
+            'password' =>'required|confirmed'
+        ]);
+
+        $user = User::create([
+            'name'=>$fields['name'],
+            'email'=>$fields['email'],
+            'password'=>Hash::make($fields['password']),
+        ]);
+
+        //create token
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        $response = [
+            'status'=>true,
+            'message'=>'registered successfully!',
+            'data' =>[
+                'user'=>$user,
+                'token'=>$token
+            ]
+        ];
+        return response($response,201);
+    }
 
     public function login(Request $request){
         $fields = $request->validate([
@@ -54,13 +55,15 @@ class AuthController extends Controller
 
         //create token
         $token = $user->createToken('myapptoken')->plainTextToken;
+        $user_id = Str::uuid();
 
         $response = [
             'status'=>true,
             'message'=>'Login successful!',
             'data' =>[
                 'user'=>$user,
-                'token'=>$token
+                'token'=>$token,
+                'user_id'=>$user_id
             ]
         ];
         return response($response,201);
